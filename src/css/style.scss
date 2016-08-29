@@ -1,0 +1,157 @@
+@charset 'UTF-8';
+
+@import '../../node_modules/normalize.css/normalize.css';
+
+@import '../../node_modules/font-awesome/css/font-awesome.css';
+
+$mobile: '(min-width: 450px)';
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+body {
+  color: #444;
+  font: 400 16px/1.4 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: .5px;
+}
+
+a {
+  color: #666;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color .3s ease-out;
+
+  &:hover {
+    color: #8fd694;
+  }
+}
+
+p {
+  font-size: .9em;
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+h1 {
+  font-size: 18px;
+  margin-left: 3px;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  box-sizing: border-box;
+  margin: 50vh auto 0;
+  max-width: 450px;
+  padding: 1.5em;
+  position: relative;
+  transform: translateY(-50%);
+}
+
+.pro {
+  box-sizing: border-box;
+  padding-bottom: 20px;
+  text-align: center;
+  width: 100%;
+
+  img {
+    border-radius: 60px;
+    height: 120px;
+    width: 120px;
+  }
+}
+
+.menu {
+  width: 100%;
+
+  ul {
+    list-style: none;
+    text-align: center;
+
+    li {
+      display: inline-block;
+      padding: 0;
+
+      a {
+        color: #cfcfcf;
+        display: block;
+        font-size: 1.5em;
+        padding: 0 10px;
+        transition: color .3s ease-out;
+
+        &:hover {
+          color: #ff4d4d;
+        }
+      }
+    }
+  }
+}
+
+.head {
+  box-sizing: border-box;
+  display: none;
+  padding: 20px 45px 0;
+
+  p {
+    animation: type 5s steps(60, end);
+    color: #000;
+    font-family: 'Source Code Pro', monospace;
+    font-size: .8em;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  @media #{$mobile} {
+    display: block;
+  }
+}
+
+@keyframes type {
+  from { width: 0; }
+}
+
+.about {
+  box-sizing: border-box;
+  padding: 20px 0;
+  width: 100%;
+
+  p {
+    color: #666;
+    letter-spacing: .5px;
+    margin-bottom: 10px;
+
+    span {
+      color: #333;
+      font-weight: bold;
+    }
+  }
+
+  @media #{$mobile} {
+    padding: 20px;
+  }
+}
+
+.foot {
+  color: #aaa;
+  font-size: .9em;
+  text-align: center;
+
+  .love {
+    color: #ff4d4d;
+  }
+}
