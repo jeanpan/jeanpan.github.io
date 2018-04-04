@@ -1,77 +1,157 @@
 'use strict';
 
+// Include Gulp & Tools We'll Use
 var gulp = require('gulp');
-var gutil = require('gulp-util');
+var $ = require('gulp-load-plugins')();
+var del = require('del');
+var runSequence = require('run-sequence');
 var browserSync = require('browser-sync');
+var reload = browserSync.reload;
 
-var paths = {
-  styles: 'src/css/**/*.scss',
-  scripts: 'src/js/**/*.js',
-  app: 'index.html'
-};
-
-var sassOptions = {
-  errLogToConsole: true,
-  outputStyle: 'expanded'
-};
-
-gulp.task('default', ['serve']);
-
-// CSS
-gulp.task('css', function () {
-  var sass = require('gulp-sass');
-  var autoprefix = require('gulp-autoprefixer');
-  var cssimport = require('gulp-cssimport');
-  // var cssnano = require('gulp-cssnano')
-  var rename = require('gulp-rename');
-
-  gulp.src('src/css/style.scss')
-    .pipe(sass(sassOptions).on('error', sass.logError))
-    .pipe(autoprefix('last 2 versions'))
-    .pipe(cssimport())
-    // .pipe(cssnano({ zindex: false }))
-    .pipe(rename('style.css'))
-    .pipe(gulp.dest('./site/css'))
-    .pipe(browserSync.stream())
+// Lint JavaScript
+gulp.task('jshint', function() {
+  return gulp.src(['app/scripts/**/*.js'])
+    .pipe(reload({stream: true, once: true}))
+    .pipe($.jshint())
+    .pipe($.jshint.reporter('jshint-stylish'))
+    .pipe($.if(!browserSync.active, $.jshint.reporter('fail')));
 });
 
-gulp.task('js', function () {
-  var browserify = require('browserify')
-  // var envify = require('loose-envify')
-  var source = require('vinyl-source-stream')
-  var buffer = require('vinyl-buffer')
-  var uglify = require('gulp-uglify')
-  var sourcemaps = require('gulp-sourcemaps')
-
-  // Set NODE_ENV for Redux and loose-envify
-  // process.env.NODE_ENV = 'production'
-
-  // see package.json for transforms
-  return browserify({ entries: ['src/js/main.js'] })
-    .transform('babelify', { presets: ['es2015', 'react'] })
-    .bundle()
-    .pipe(source('main.min.js'))
-    .pipe(buffer())
-    .pipe(sourcemaps.init({ loadMaps: true }))
-      // Add transformation tasks to the pipeline here.
-      .pipe(uglify())
-      .on('error', gutil.log)
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./site/js'))
+// Optimize Images
+gulp.task('images', function() {
+  return gulp.src('app/images/**/*')
+    .pipe($.cache($.imagemin({
+      progressive: true,
+      interlaced: true
+    })))
+    .pipe(gulp.dest('dist/images'))
+    .pipe($.size({title: 'images'}));
 });
 
-// create a task that ensures the `js` task is complete before
-// reloading browsers
-gulp.task('js-watch', ['js'], browserSync.reload);
+// Copy All Files At The Root Level (app)
+gulp.task('copy', function() {
+  return gulp.src([
+    'app/*',
+    '!app/*.html',
+    'node_modules/apache-server-configs/dist/.htaccess'
+  ], {
+    dot: true
+  }).pipe(gulp.dest('dist'))
+    .pipe($.size({title: 'copy'}));
+});
 
-gulp.task('serve', ['css', 'js'], function () {
-  browserSync.init({
-    server: {
-      baseDir: "./"
-    }
-  })
+// Copy Web Fonts To Dist
+gulp.task('fonts', function() {
+  return gulp.src(['app/fonts/**'])
+    .pipe(gulp.dest('dist/fonts'))
+    .pipe($.size({title: 'fonts'}));
+});
 
-  gulp.watch(paths.styles, ['css'])
-  gulp.watch(paths.scripts, ['js-watch'])
-  gulp.watch(paths.app).on('change', browserSync.reload)
+// Compile and Automatically Prefix Stylesheets
+gulp.task('styles', function() {
+
+  var AUTOPREFIXER_BROWSERS = [
+    'ie >= 10',
+    'ie_mob >= 10',
+    'ff >= 30',
+    'chrome >= 34',
+    'safari >= 7',
+    'opera >= 23',
+    'ios >= 7',
+    'android >= 4.4',
+    'bb >= 10'
+  ];
+
+  // For best performance, don't add Sass partials to `gulp.src`
+  return gulp.src([
+    'app/styles/**/*.css'
+  ])
+    .pipe($.autoprefixer(AUTOPREFIXER_BROWSERS))
+    // Concatenate And Minify Styles
+    .pipe($.if('*.css', $.csso()))
+    .pipe(gulp.dest('dist/styles'))
+    .pipe($.size({title: 'styles'}));
+});
+
+// Concatenate And Minify JavaScript
+gulp.task('scripts', function() {
+  var sources = [
+    'app/scripts/*.js'];
+
+  return gulp.src(sources)
+    //.pipe($.concat('main.min.js'))
+    //.pipe($.uglify({preserveComments: 'some'}))
+    // Output Files
+    .pipe(gulp.dest('dist/scripts'))
+    .pipe($.size({title: 'scripts'}));
+});
+
+// Scan Your HTML For Assets & Optimize Them
+gulp.task('html', function() {
+  var assets = $.useref.assets({searchPath: '{.tmp,app}'});
+
+  return gulp.src('app/**/**/*.html')
+    .pipe(assets)
+    // Remove Any Unused CSS
+    // Note: If not using the Style Guide, you can delete it from
+    // the next line to only include styles your project uses.
+    .pipe($.if('*.css', $.uncss({
+      html: [
+        'app/index.html'
+      ],
+      // CSS Selectors for UnCSS to ignore
+      ignore: []
+    })))
+
+    // Concatenate And Minify Styles
+    // In case you are still using useref build blocks
+    .pipe($.if('*.css', $.csso()))
+    .pipe(assets.restore())
+    .pipe($.useref())
+    // Minify Any HTML
+    .pipe($.if('*.html', $.minifyHtml()))
+    // Output Files
+    .pipe(gulp.dest('dist'))
+    .pipe($.size({title: 'html'}));
+});
+
+// Clean Output Directory
+gulp.task('clean', del.bind(null, ['.tmp', 'dist/*', '!dist/.git'], {dot: true}));
+
+// Watch Files For Changes & Reload
+gulp.task('serve', ['styles'], function() {
+  browserSync({
+    notify: false,
+    // Customize the BrowserSync console logging prefix
+    logPrefix: 'WSK',
+    // Run as an https by uncommenting 'https: true'
+    // Note: this uses an unsigned certificate which on first access
+    //       will present a certificate warning in the browser.
+    // https: true,
+    server: ['.tmp', 'app']
+  });
+
+  gulp.watch(['app/**/**/**/*.html'], reload);
+  gulp.watch(['app/**/**/**/*.{scss,css}'], ['styles', reload]);
+  gulp.watch(['app/scripts/**/*.js','app/styleguide/**/*.js'], ['jshint']);
+  gulp.watch(['app/images/**/*'], reload);
+});
+
+// Build and serve the output from the dist build
+gulp.task('serve:dist', ['default'], function() {
+  browserSync({
+    notify: false,
+    logPrefix: 'WSK',
+    // Run as an https by uncommenting 'https: true'
+    // Note: this uses an unsigned certificate which on first access
+    //       will present a certificate warning in the browser.
+    // https: true,
+    server: 'dist',
+    baseDir: "dist"
+  });
+});
+
+// Build Production Files, the Default Task
+gulp.task('default', ['clean'], function(cb) {
+  runSequence('styles', ['html', 'scripts', 'styles', 'images', 'fonts', 'copy'], cb);
 });

@@ -3,3 +3,4 @@
 log/*.log
 .sass-cache/
 *.map
+node_modules
