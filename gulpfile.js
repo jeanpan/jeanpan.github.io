@@ -1,6 +1,5 @@
 'use strict';
 
-// Include Gulp & Tools We'll Use
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 var del = require('del');
@@ -32,8 +31,7 @@ gulp.task('images', function() {
 gulp.task('copy', function() {
   return gulp.src([
     'app/*',
-    '!app/*.html',
-    'node_modules/apache-server-configs/dist/.htaccess'
+    '!app/*.html'
   ], {
     dot: true
   }).pipe(gulp.dest('dist'))
@@ -111,7 +109,7 @@ gulp.task('html', function() {
     // Minify Any HTML
     .pipe($.if('*.html', $.minifyHtml()))
     // Output Files
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest('.'))
     .pipe($.size({title: 'html'}));
 });
 
@@ -128,7 +126,11 @@ gulp.task('serve', ['styles'], function() {
     // Note: this uses an unsigned certificate which on first access
     //       will present a certificate warning in the browser.
     // https: true,
-    server: ['.tmp', 'app']
+    // server: ['.tmp', 'app', 'dist']
+    server: {
+      baseDir: '.',
+      index: 'app/index.html'
+    }
   });
 
   gulp.watch(['app/**/**/**/*.html'], reload);
@@ -146,8 +148,7 @@ gulp.task('serve:dist', ['default'], function() {
     // Note: this uses an unsigned certificate which on first access
     //       will present a certificate warning in the browser.
     // https: true,
-    server: 'dist',
-    baseDir: "dist"
+    server: '.',
   });
 });
 
