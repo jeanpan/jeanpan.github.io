@@ -102,7 +102,7 @@ button:focus-visible {
   margin: 0 auto;
 }
 
-/* 區塊標題：上方一條綠色短線當作段落記號 */
+/* 區塊標題：前面一條綠色短線當作段落記號 */
 .section-title {
   font-family: var(--serif-tc);
   font-size: 17px;
@@ -111,14 +111,16 @@ button:focus-visible {
   letter-spacing: var(--track-title);
   color: var(--ink);
   margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 .section-title::before {
   content: '';
-  display: block;
+  flex: none;
   width: 24px;
   height: 2px;
   background: var(--accent);
-  margin-bottom: 12px;
 }
 
 .page-title {
