@@ -102,13 +102,23 @@ button:focus-visible {
   margin: 0 auto;
 }
 
+/* 區塊標題：上方一條綠色短線當作段落記號 */
 .section-title {
   font-family: var(--serif-tc);
-  font-size: 15px;
-  font-weight: 400;
-  letter-spacing: var(--track-label);
-  color: var(--ink-soft);
-  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: var(--track-title);
+  color: var(--ink);
+  margin: 0 0 12px;
+}
+.section-title::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--accent);
+  margin-bottom: 12px;
 }
 
 .page-title {
