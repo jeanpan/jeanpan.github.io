@@ -1,0 +1,28 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Emoji from '../../../components/Emoji.astro';
+import PostList from '../../../components/PostList.astro';
+import { getPosts, langPaths, otherLang, t, type Lang } from '../../../i18n';
+
+export const getStaticPaths = langPaths;
+
+const lang = Astro.params.lang as Lang;
+const s = t(lang);
+const posts = await getPosts(lang);
+---
+
+<Base lang={lang} title={s.navWriting} nav="writing" altHref={`/${otherLang(lang)}/writing/`}>
+  <section class="writing">
+    <h1 class="page-title">{s.navWriting} <Emoji char="✍️" motion="float" /></h1>
+    {posts.length ? <PostList posts={posts} groupByYear /> : <p>{s.noPosts}</p>}
+  </section>
+</Base>
+
+<style>
+  .writing {
+    padding-block: 56px 0;
+  }
+  p {
+    color: var(--ink-soft);
+  }
+</style>

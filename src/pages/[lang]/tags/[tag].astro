@@ -1,0 +1,46 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PostList from '../../../components/PostList.astro';
+import { getPosts, langs, otherLang, t, type Post } from '../../../i18n';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const lang of langs) {
+    const posts = await getPosts(lang);
+    const tags = new Set(posts.flatMap((p) => p.data.tags));
+    for (const tag of tags) {
+      paths.push({
+        params: { lang, tag },
+        props: { posts: posts.filter((p) => p.data.tags.includes(tag)) },
+      });
+    }
+  }
+  return paths;
+}
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+const lang = Astro.params.lang as 'zh' | 'en';
+const tag = Astro.params.tag!;
+const s = t(lang);
+---
+
+<Base lang={lang} title={s.taggedWith(tag)} nav="writing" altHref={`/${otherLang(lang)}/writing/`} hasTranslation={false}>
+  <section class="tagged">
+    <h1 class="page-title"><span>#</span>{tag}</h1>
+    <PostList posts={posts} groupByYear />
+  </section>
+</Base>
+
+<style>
+  .tagged {
+    padding-block: 56px 0;
+  }
+  h1 span {
+    color: var(--accent);
+    margin-right: 4px;
+  }
+</style>

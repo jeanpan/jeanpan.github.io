@@ -1,0 +1,85 @@
+---
+import { formatDate, postUrl, type Post } from '../i18n';
+
+interface Props {
+  posts: Post[];
+  // 依年份分組顯示
+  groupByYear?: boolean;
+}
+
+const { posts, groupByYear = false } = Astro.props;
+
+const groups = groupByYear
+  ? Object.entries(
+      Object.groupBy(posts, (p) => String(p.data.date.getUTCFullYear())) as Record<string, Post[]>,
+    ).sort(([a], [b]) => Number(b) - Number(a))
+  : [['', posts] as const];
+---
+
+{
+  groups.map(([year, items]) => (
+    <>
+      {year && <div class="year">{year}</div>}
+      <ul class="posts">
+        {items.map((post) => (
+          <li>
+            <a href={postUrl(post)}>
+              <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, 'short')}</time>
+              <span class="t">
+                {post.data.emoji && (
+                  <span class="emoji" aria-hidden="true">
+                    {post.data.emoji}
+                  </span>
+                )}
+                {post.data.title}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </>
+  ))
+}
+
+<style>
+  .year {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin: 28px 0 4px;
+  }
+  .posts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .posts a {
+    display: grid;
+    grid-template-columns: 4.5em 1fr;
+    gap: 16px;
+    align-items: baseline;
+    padding-block: 10px;
+  }
+  time {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .t {
+    font-family: var(--serif-tc);
+    font-size: 17px;
+    transition: color 0.2s;
+  }
+  .t .emoji {
+    margin-right: 8px;
+  }
+  .posts a:hover .t {
+    color: var(--accent);
+  }
+  @media (max-width: 560px) {
+    .posts a {
+      grid-template-columns: 4em 1fr;
+    }
+  }
+</style>

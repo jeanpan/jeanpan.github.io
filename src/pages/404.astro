@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import Emoji from '../components/Emoji.astro';
+import { t } from '../i18n';
+
+const s = t('zh');
+const en = t('en');
+---
+
+<Base lang="zh" title="404">
+  <section class="nf">
+    <h1 class="page-title">404 <Emoji char="🍃" motion="float" /></h1>
+    <p>{s.notFound} <a href="/zh/">{s.backHome}</a></p>
+    <p lang="en">{en.notFound} <a href="/en/">{en.backHome}</a></p>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    padding-block: 56px 0;
+  }
+  p {
+    color: var(--ink-soft);
+  }
+  a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

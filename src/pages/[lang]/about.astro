@@ -1,0 +1,240 @@
+---
+import Base from '../../layouts/Base.astro';
+import Emoji from '../../components/Emoji.astro';
+import { langPaths, otherLang, type Lang } from '../../i18n';
+
+export const getStaticPaths = langPaths;
+
+const lang = Astro.params.lang as Lang;
+
+const copy = {
+  zh: {
+    title: '關於我',
+    intro: [
+      '在台灣長大 🇹🇼，2018 年從台灣搬到東京 🇯🇵。',
+    ],
+    experience: '經歷',
+    education: '學歷',
+    languages: '語言',
+  },
+  en: {
+    title: 'About me',
+    intro: [
+      'I grew up in Taiwan 🇹🇼 and moved to Tokyo 🇯🇵 in 2018.',
+    ],
+    experience: 'Experience',
+    education: 'Education',
+    languages: 'Languages',
+  },
+}[lang];
+
+// 經歷的簡介中英文頁面都用英文
+const experience = [
+  {
+    company: 'Indeed',
+    city: { zh: '東京', en: 'Tokyo' },
+    roles: [
+      {
+        title: 'Senior Software Engineer, Design System',
+        dates: '2021.08 – 2026.03',
+        summary:
+          'Led the architecture of a cross-platform design system for web and React Native, used by product teams across the company. Improved how teams build and ship UI through better tooling, release workflows, visual and accessibility testing, and AI-powered automation.',
+      },
+      {
+        title: 'Software Engineer II, Company Page',
+        dates: '2018.06 – 2021.07',
+        summary: 'Built end-to-end features for Company Pages and led a small frontend team on key projects.',
+      },
+    ],
+  },
+  {
+    company: 'KaiOS Technologies',
+    city: { zh: '台北', en: 'Taipei' },
+    roles: [
+      {
+        title: 'Software Engineer, Frontend',
+        dates: '2017.02 – 2018.04',
+        summary: 'Built system apps and the UI component library for the KaiOS feature-phone OS.',
+      },
+    ],
+  },
+  {
+    company: 'Yahoo!',
+    city: { zh: '台北', en: 'Taipei' },
+    roles: [
+      {
+        title: 'Software Engineer, Yahoo! Answers',
+        dates: '2012.10 – 2015.04',
+        summary: 'Built features for Yahoo! Answers and surfaced Q&A content in Yahoo! Search.',
+      },
+    ],
+  },
+];
+
+const education = [
+  {
+    zh: { school: '國立交通大學', degree: '資訊工程 碩士' },
+    en: { school: 'National Chiao Tung University', degree: 'M.S., Computer Science and Information Engineering' },
+  },
+  {
+    zh: { school: '國立中央大學', degree: '資訊工程 學士' },
+    en: { school: 'National Central University', degree: 'B.S., Computer Science and Information Engineering' },
+  },
+];
+
+const languages = [
+  { zh: ['中文', '母語'], en: ['Mandarin Chinese', 'Native'] },
+  { zh: ['英文', '工作流利'], en: ['English', 'Professional working'] },
+  { zh: ['日文', '日常會話（がんばって勉強中…）'], en: ['Japanese', 'Conversational (がんばって勉強中…)'] },
+];
+---
+
+<Base lang={lang} title={copy.title} nav="about" altHref={`/${otherLang(lang)}/about/`}>
+  <section class="about">
+    <h1 class="page-title">{copy.title} <Emoji char="👩‍💻" motion="type" /></h1>
+    {copy.intro.map((p) => <p class="intro">{p}</p>)}
+
+    <h2 class="section-title">{copy.experience}</h2>
+    <ol class="list">
+      {
+        experience.map((job) => (
+          <li>
+            <h3>
+              {job.company} <span class="city">{job.city[lang]}</span>
+            </h3>
+            <ol class="roles">
+              {job.roles.map((role) => (
+                <li>
+                  <div class="role-head">
+                    <span class="role">{role.title}</span>
+                    <span class="dates">{role.dates}</span>
+                  </div>
+                  <p lang="en">{role.summary}</p>
+                </li>
+              ))}
+            </ol>
+          </li>
+        ))
+      }
+    </ol>
+
+    <h2 class="section-title">{copy.education}</h2>
+    <ul class="list">
+      {
+        education.map((e) => (
+          <li>
+            <h3>{e[lang].school}</h3>
+            <p>{e[lang].degree}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2 class="section-title">{copy.languages}</h2>
+    <dl class="pairs">
+      {
+        languages.map((l) => (
+          <div>
+            <dt>{l[lang][0]}</dt>
+            <dd class="level">{l[lang][1]}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+</Base>
+
+<style>
+  .about {
+    padding-block: 56px 0;
+  }
+  .intro {
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+  }
+  .section-title {
+    margin-top: 56px;
+    margin-bottom: 12px;
+  }
+  ol,
+  ul,
+  dl,
+  dd {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .list > li {
+    padding-block: 18px;
+  }
+  .list > li + li {
+    border-top: 1px solid var(--line);
+  }
+  h3 {
+    font-family: var(--serif-tc);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .city {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: var(--body-weight);
+    color: var(--ink-soft);
+    margin-left: 6px;
+  }
+  .list p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 15px;
+  }
+  .roles {
+    display: grid;
+    gap: 14px;
+    margin-top: 8px;
+  }
+  .role-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 2px 16px;
+  }
+  .role {
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .dates {
+    font-family: var(--serif);
+    font-size: 14px;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .pairs {
+    display: grid;
+    gap: 14px;
+  }
+  .pairs > div {
+    display: grid;
+    grid-template-columns: 9em 1fr;
+    gap: 16px;
+    align-items: baseline;
+  }
+  dt {
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .level {
+    font-size: 15px;
+  }
+
+  @media (max-width: 560px) {
+    .pairs > div {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+</style>

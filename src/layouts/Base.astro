@@ -1,0 +1,207 @@
+---
+import '../styles/global.css';
+import avatar from '../assets/avatar.jpg';
+import Emoji from '../components/Emoji.astro';
+import { htmlLang, otherLang, t, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  title?: string;
+  description?: string;
+  // 同一頁另一個語言的網址；沒有翻譯時連到另一個語言的首頁
+  altHref?: string;
+  // altHref 是不是同一頁的翻譯版本（是的話才輸出 hreflang）
+  hasTranslation?: boolean;
+  nav?: 'home' | 'writing' | 'about';
+  type?: 'website' | 'article';
+  published?: Date;
+  modified?: Date;
+}
+
+const {
+  lang,
+  title,
+  description,
+  altHref,
+  hasTranslation = true,
+  nav,
+  type = 'website',
+  published,
+  modified,
+} = Astro.props;
+const s = t(lang);
+const other = otherLang(lang);
+const pageTitle = title ? `${title} · Jean Pan` : 'Jean Pan';
+const desc = description ?? s.siteDescription;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(avatar.src, Astro.site);
+const switchHref = altHref ?? `/${other}/`;
+
+const links = [
+  { key: 'home', href: `/${lang}/`, label: s.navHome },
+  { key: 'writing', href: `/${lang}/writing/`, label: s.navWriting },
+  { key: 'about', href: `/${lang}/about/`, label: s.navAbout },
+] as const;
+---
+
+<!doctype html>
+<html lang={htmlLang[lang]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    {
+      altHref && hasTranslation && (
+        <>
+          <link rel="alternate" hreflang={htmlLang[lang]} href={canonical} />
+          <link rel="alternate" hreflang={htmlLang[other]} href={new URL(altHref, Astro.site)} />
+          <link rel="alternate" hreflang="x-default" href={lang === 'zh' ? canonical : new URL(altHref, Astro.site)} />
+        </>
+      )
+    }
+    <link rel="alternate" type="application/rss+xml" title="Jean Pan" href={`/${lang}/rss.xml`} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:site_name" content="Jean Pan" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title ?? 'Jean Pan'} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content={lang === 'zh' ? 'zh_TW' : 'en_US'} />
+    {published && <meta property="article:published_time" content={published.toISOString()} />}
+    {modified && <meta property="article:modified_time" content={modified.toISOString()} />}
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Figtree:wght@300;400;500&family=Lora:wght@400;600&family=Noto+Sans+TC:wght@300;400;500&family=Noto+Serif+TC:wght@400;600&display=swap"
+    />
+
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem('theme');
+        if (saved) document.documentElement.dataset.theme = saved;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-head">
+        <a class="logo" href={`/${lang}/`}>Jean Pan</a>
+        <nav class="site-nav" aria-label={s.navHome}>
+          {
+            links.map((l) => (
+              <a href={l.href} aria-current={nav === l.key ? 'page' : undefined}>
+                {l.label}
+              </a>
+            ))
+          }
+          <span class="toggles">
+            <a href={switchHref} hreflang={htmlLang[other]} aria-label={s.switchLangLabel}>{s.switchLang}</a>
+            <button type="button" id="theme-toggle" aria-label={s.toggleTheme}>☾</button>
+          </span>
+        </nav>
+      </header>
+
+      <main>
+        <slot />
+      </main>
+
+      <footer class="site-foot">
+        <small class="credit">
+          Emoji：<a class="inline-link" href="https://googlefonts.github.io/noto-emoji-animation/">Google Noto Animated Emoji</a>（CC BY 4.0）
+        </small>
+        <span>© {new Date().getFullYear()} Jean Pan</span>
+        <span>{s.footerPlace} <Emoji char="🗼" /></span>
+      </footer>
+    </div>
+
+    <script>
+      const root = document.documentElement;
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        const dark = root.dataset.theme
+          ? root.dataset.theme === 'dark'
+          : matchMedia('(prefers-color-scheme: dark)').matches;
+        const next = dark ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem('theme', next);
+        } catch {}
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .site-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    padding-block: 28px;
+    border-bottom: 1px solid var(--line);
+  }
+  .logo {
+    font-family: var(--serif);
+    font-size: 21px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .site-nav {
+    display: flex;
+    gap: 22px;
+    font-size: 14px;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .site-nav a {
+    color: var(--ink-soft);
+    transition: color 0.2s;
+  }
+  .site-nav a:hover,
+  .site-nav a[aria-current] {
+    color: var(--ink);
+  }
+  .site-nav a[aria-current] {
+    border-bottom: 1px solid var(--accent);
+  }
+  .toggles {
+    display: flex;
+    gap: 14px;
+    font-size: 13px;
+    align-items: baseline;
+  }
+  .toggles button {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: var(--ink-soft);
+    font: inherit;
+    cursor: pointer;
+  }
+  .toggles button:hover {
+    color: var(--ink);
+  }
+  .site-foot {
+    margin-top: 72px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .credit {
+    flex-basis: 100%;
+    font-size: 11px;
+  }
+</style>

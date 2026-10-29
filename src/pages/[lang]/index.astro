@@ -1,0 +1,145 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Emoji from '../../components/Emoji.astro';
+import PostList from '../../components/PostList.astro';
+import avatar from '../../assets/avatar.jpg';
+import { getPosts, langPaths, otherLang, t, type Lang } from '../../i18n';
+
+export const getStaticPaths = langPaths;
+
+const lang = Astro.params.lang as Lang;
+const s = t(lang);
+const posts = (await getPosts(lang)).slice(0, 5);
+
+const socials = [
+  { label: 'GitHub', href: 'https://github.com/jeanpan' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/yi-chin-pan-6a74384b' },
+  { label: 'Email', href: 'mailto:jeanpan314@gmail.com' },
+  { label: 'RSS', href: `/${lang}/rss.xml` },
+];
+---
+
+<Base lang={lang} nav="home" altHref={`/${otherLang(lang)}/`}>
+  <section class="hero">
+    <div class="intro-head">
+      <Image src={avatar} alt="Jean Pan" width={176} height={176} class="avatar" loading="eager" />
+      <h1>Hello, I am Jean. <Emoji char="👋" animated /></h1>
+    </div>
+    {
+      lang === 'zh' ? (
+        <>
+          <p>
+            住在東京，略懂 <strong>UI/UX</strong> 的軟體工程師。專注在<strong>全端開發</strong>、<strong>前端工程</strong>、<strong>Design System</strong> 和<strong>開發者體驗</strong>，最近也在研究 <strong>LLM</strong> 和 <strong>AI agent</strong>，以及怎麼把它們帶進日常的開發流程。
+          </p>
+          <p>
+            在這裡記錄做過的專案、學到的東西，以及生活中的大小事。
+          </p>
+        </>
+      ) : (
+        <>
+          <p>
+            An experienced software engineer based in Tokyo, building web and mobile apps with an eye for{' '}
+            <strong>UX</strong>. I focus on <strong>full-stack development</strong>,{' '}
+            <strong>front-end engineering</strong>, <strong>design systems</strong> and{' '}
+            <strong>developer experience</strong>, and lately I've been exploring <strong>LLMs</strong> and{' '}
+            <strong>AI agents</strong>, and how to bring them into everyday engineering work.
+          </p>
+          <p>
+            This is where I write about the projects I build, the things I learn, and the big and small moments of
+            life.
+          </p>
+        </>
+      )
+    }
+    <div class="links">
+      {socials.map((l) => <a href={l.href}>{l.label}</a>)}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="section-title">{s.recentWriting} <Emoji char="✍️" /></h2>
+    {posts.length ? <PostList posts={posts} /> : <p class="empty">{s.noPosts}</p>}
+    <a class="more" href={`/${lang}/writing/`}>{s.allWriting}</a>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: 64px 48px;
+  }
+  .intro-head {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  .hero :global(.avatar) {
+    width: 88px;
+    height: 88px;
+    flex: none;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
+  h1 {
+    font-family: var(--serif-tc);
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 1.4;
+    margin: 0;
+    text-wrap: balance;
+    letter-spacing: var(--track-title);
+  }
+  p {
+    margin: 0 0 14px;
+    color: var(--ink-soft);
+    max-width: 34em;
+  }
+  strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    margin-top: 26px;
+    font-size: 14px;
+  }
+  .links a {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1px;
+    transition: border-color 0.2s;
+  }
+  .links a:hover {
+    border-color: var(--accent);
+  }
+  .empty {
+    color: var(--ink-soft);
+  }
+  .more {
+    display: inline-block;
+    margin-top: 18px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .more:hover {
+    color: var(--accent);
+  }
+  @media (max-width: 560px) {
+    .hero {
+      padding-block: 44px 32px;
+    }
+    .intro-head {
+      gap: 16px;
+    }
+    .hero :global(.avatar) {
+      width: 64px;
+      height: 64px;
+    }
+    h1 {
+      font-size: 22px;
+    }
+  }
+</style>

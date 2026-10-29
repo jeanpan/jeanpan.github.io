@@ -1,0 +1,23 @@
+---
+// 根目錄依瀏覽器語言導向 /zh/ 或 /en/，沒有 JavaScript 時預設中文
+---
+
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Jean Pan</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" hreflang="zh-Hant" href="https://jeanpan.github.io/zh/" />
+    <link rel="alternate" hreflang="en" href="https://jeanpan.github.io/en/" />
+    <script is:inline>
+      const zh = (navigator.languages || [navigator.language]).some((l) => l.toLowerCase().startsWith('zh'));
+      location.replace(zh ? '/zh/' : '/en/');
+    </script>
+    <meta http-equiv="refresh" content="1; url=/zh/" />
+  </head>
+  <body>
+    <a href="/zh/">中文</a> · <a href="/en/">English</a>
+  </body>
+</html>

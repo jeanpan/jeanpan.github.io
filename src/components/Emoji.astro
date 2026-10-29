@@ -1,0 +1,48 @@
+---
+// 用 CSS 讓一般 emoji 動起來；animated 時改用 Google Noto Animated Emoji（CC BY 4.0）
+interface Props {
+  char: string;
+  motion?: 'float' | 'blink' | 'type';
+  animated?: boolean;
+}
+
+const { char, motion, animated = false } = Astro.props;
+const codepoints = [...char]
+  .map((c) => c.codePointAt(0)!.toString(16))
+  .filter((cp) => cp !== 'fe0f')
+  .join('_');
+const noto = `https://fonts.gstatic.com/s/e/notoemoji/latest/${codepoints}/512`;
+---
+
+{
+  animated ? (
+    <span class="emoji noto">
+      <picture>
+        <source srcset={`${noto}.webp`} type="image/webp" />
+        <img src={`${noto}.gif`} alt={char} width="32" height="32" loading="lazy" decoding="async" />
+      </picture>
+      <span class="still" aria-hidden="true">{char}</span>
+    </span>
+  ) : (
+    <span class:list={['emoji', motion && `emoji-${motion}`]} aria-hidden="true">{char}</span>
+  )
+}
+
+<style>
+  .noto img {
+    width: 1.15em;
+    height: 1.15em;
+    vertical-align: -0.15em;
+  }
+  .still {
+    display: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .noto picture {
+      display: none;
+    }
+    .still {
+      display: inline;
+    }
+  }
+</style>

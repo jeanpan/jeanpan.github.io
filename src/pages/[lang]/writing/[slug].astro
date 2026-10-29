@@ -1,0 +1,315 @@
+---
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import Emoji from '../../../components/Emoji.astro';
+import {
+  formatDate,
+  getPosts,
+  langs,
+  otherLang,
+  postSlug,
+  postUrl,
+  readingMinutes,
+  t,
+  type Post,
+} from '../../../i18n';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const lang of langs) {
+    const posts = await getPosts(lang);
+    const others = await getPosts(otherLang(lang));
+    for (const [i, post] of posts.entries()) {
+      paths.push({
+        params: { lang, slug: postSlug(post) },
+        props: {
+          post,
+          // 列表是新到舊，所以「上一篇」是比較舊的那篇
+          prev: posts[i + 1],
+          next: posts[i - 1],
+          translation: others.find((p) => postSlug(p) === postSlug(post)),
+        },
+      });
+    }
+  }
+  return paths;
+}
+
+interface Props {
+  post: Post;
+  prev?: Post;
+  next?: Post;
+  translation?: Post;
+}
+
+const { post, prev, next, translation } = Astro.props;
+const lang = Astro.params.lang as 'zh' | 'en';
+const s = t(lang);
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+const minutes = readingMinutes(post.body ?? '', lang);
+---
+
+<Base
+  lang={lang}
+  title={post.data.title}
+  description={post.data.description}
+  altHref={translation ? postUrl(translation) : `/${otherLang(lang)}/writing/`}
+  hasTranslation={Boolean(translation)}
+  published={post.data.date}
+  modified={post.data.updated}
+  nav="writing"
+  type="article"
+>
+  <article class="article">
+    <div class="meta">
+      <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+      <span>{s.readingTime(minutes)}</span>
+    </div>
+    <h1>{post.data.emoji && <Emoji char={post.data.emoji} motion="float" />}{post.data.title}</h1>
+    {post.data.description && <p class="sub">{post.data.description}</p>}
+
+    {
+      toc.length >= 3 && (
+        <nav class="toc" aria-label={s.toc}>
+          <span>{s.toc}</span>
+          <ol>
+            {toc.map((h) => (
+              <li>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {
+      post.data.tags.length > 0 && (
+        <div class="tags">
+          {post.data.tags.map((tag) => (
+            <a href={`/${lang}/tags/${tag}/`}>{tag}</a>
+          ))}
+        </div>
+      )
+    }
+
+    {
+      (prev || next) && (
+        <nav class="pager" aria-label={`${s.prev} / ${s.next}`}>
+          {prev ? (
+            <a href={postUrl(prev)}>
+              <span>{s.prev}</span>
+              <span class="t">{prev.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+          {next && (
+            <a href={postUrl(next)} class="next">
+              <span>{s.next}</span>
+              <span class="t">{next.data.title}</span>
+            </a>
+          )}
+        </nav>
+      )
+    }
+  </article>
+</Base>
+
+<style>
+  .article {
+    padding-block: 56px 0;
+  }
+  .meta {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--ink-soft);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+  }
+  h1 {
+    font-family: var(--serif-tc);
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 1.5;
+    margin: 12px 0 8px;
+    text-wrap: balance;
+    letter-spacing: var(--track-title);
+  }
+  h1 :global(.emoji) {
+    margin-right: 12px;
+  }
+  .sub {
+    color: var(--ink-soft);
+    margin: 0 0 36px;
+  }
+  .toc {
+    font-size: 14px;
+    color: var(--ink-soft);
+    border-left: 1px solid var(--line);
+    padding-left: 18px;
+    margin: 0 0 40px;
+  }
+  .toc span {
+    font-family: var(--serif-tc);
+    letter-spacing: var(--track-label);
+  }
+  .toc ol {
+    margin: 4px 0 0;
+    padding-left: 1.2em;
+  }
+  .toc a:hover {
+    color: var(--accent);
+  }
+
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 1.4em;
+  }
+  .prose :global(h2),
+  .prose :global(h3) {
+    font-family: var(--serif-tc);
+    font-weight: 600;
+    letter-spacing: var(--track-title);
+    line-height: 1.5;
+    scroll-margin-top: 24px;
+  }
+  .prose :global(h2) {
+    font-size: 20px;
+    margin: 2.2em 0 0.8em;
+  }
+  .prose :global(h3) {
+    font-size: 17px;
+    margin: 1.8em 0 0.6em;
+  }
+  .prose :global(a) {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .prose :global(a:hover) {
+    text-decoration-color: var(--accent);
+  }
+  .prose :global(strong) {
+    font-weight: 500;
+  }
+  .prose :global(blockquote) {
+    margin: 1.8em 0;
+    padding: 4px 0 4px 20px;
+    border-left: 2px solid var(--accent);
+    font-family: var(--serif-tc);
+    color: var(--ink-soft);
+  }
+  .prose :global(blockquote p) {
+    margin: 0;
+  }
+  .prose :global(:not(pre) > code) {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--wash);
+    padding: 0.1em 0.35em;
+    letter-spacing: 0;
+  }
+  .prose :global(pre) {
+    background: var(--wash) !important;
+    padding: 18px 20px;
+    overflow-x: auto;
+    font-size: 13.5px;
+    line-height: 1.7;
+    margin: 0 0 1.4em;
+    letter-spacing: 0;
+  }
+  .prose :global(pre code) {
+    font-family: var(--mono);
+  }
+  .prose :global(pre span) {
+    color: var(--shiki-light);
+  }
+  :global(:root[data-theme='dark']) .prose :global(pre span) {
+    color: var(--shiki-dark);
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .prose :global(pre span) {
+      color: var(--shiki-dark);
+    }
+  }
+  .prose :global(img) {
+    display: block;
+    margin: 2em auto;
+  }
+  .prose :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 3em 0;
+  }
+  .prose :global(table) {
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 0 0 1.4em;
+  }
+  .prose :global(th),
+  .prose :global(td) {
+    border-bottom: 1px solid var(--line);
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 40px;
+  }
+  .tags a::before {
+    content: '#';
+    color: var(--accent);
+    margin-right: 2px;
+  }
+  .tags a:hover {
+    color: var(--ink);
+  }
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    border-top: 1px solid var(--line);
+    margin-top: 32px;
+    padding-top: 24px;
+    font-size: 14px;
+  }
+  .pager span {
+    display: block;
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .pager .t {
+    font-family: var(--serif-tc);
+    font-style: normal;
+    color: var(--ink);
+  }
+  .pager a:hover .t {
+    color: var(--accent);
+  }
+  .pager .next {
+    text-align: right;
+  }
+  @media (max-width: 560px) {
+    h1 {
+      font-size: 25px;
+    }
+  }
+</style>

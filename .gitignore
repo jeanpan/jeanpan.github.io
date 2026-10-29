@@ -1,6 +1,5 @@
 .DS_Store
-*.swp
-log/*.log
-.sass-cache/
-*.map
-node_modules
+node_modules/
+dist/
+.astro/
+*.log

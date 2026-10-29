@@ -1,39 +1,24 @@
 {
   "name": "jeanpan.github.io",
-  "version": "1.0.0",
-  "description": "jeanpan.github.io",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jeanpan/jeanpan.github.io.git"
-  },
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
   "author": "Jean Pan",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/jeanpan/jeanpan.github.io/issues"
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
   },
-  "homepage": "https://github.com/jeanpan/jeanpan.github.io#readme",
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.8"
+  },
   "devDependencies": {
-    "browser-sync": "^2.7.13",
-    "del": "^1.2.0",
-    "es6-promise": "^3.2.1",
-    "gulp": "^3.9.0",
-    "gulp-autoprefixer": "^2.3.1",
-    "gulp-cache": "^0.2.10",
-    "gulp-changed": "^1.2.1",
-    "gulp-concat": "^2.6.0",
-    "gulp-csso": "^1.0.0",
-    "gulp-gh-pages": "^0.5.4",
-    "gulp-if": "^1.2.5",
-    "gulp-imagemin": "^2.3.0",
-    "gulp-jshint": "^1.11.2",
-    "gulp-load-plugins": "^1.0.0-rc.1",
-    "gulp-minify-html": "^1.0.3",
-    "gulp-size": "^1.2.3",
-    "gulp-uglify": "^1.2.0",
-    "gulp-uncss": "^1.0.2",
-    "gulp-useref": "^1.2.0",
-    "jshint-stylish": "^2.2.1",
-    "run-sequence": "^1.1.1",
-    "sw-precache": "^5.2.1"
+    "@astrojs/check": "^0.9.12",
+    "@shikijs/themes": "^4.5.0",
+    "typescript": "^6.0.3"
   }
 }
