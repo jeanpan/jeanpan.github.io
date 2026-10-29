@@ -24,7 +24,7 @@ const socials = [
   <section class="hero">
     <div class="intro-head">
       <Image src={avatar} alt="Jean Pan" width={176} height={176} class="avatar" loading="eager" />
-      <h1>Hello, I am Jean. <Emoji char="👋" animated /></h1>
+      <h1 lang="en">Hello, I am Jean. <Emoji char="👋" animated /></h1>
     </div>
     {
       lang === 'zh' ? (
@@ -89,7 +89,8 @@ const socials = [
     line-height: 1.4;
     margin: 0;
     text-wrap: balance;
-    letter-spacing: var(--track-title);
+    /* 標題是英文，中文頁也不加字距 */
+    letter-spacing: 0;
   }
   p {
     margin: 0 0 14px;
