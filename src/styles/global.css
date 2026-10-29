@@ -105,7 +105,7 @@ button:focus-visible {
 /* 區塊標題：上方一條綠色短線當作段落記號 */
 .section-title {
   font-family: var(--serif-tc);
-  font-size: 22px;
+  font-size: 17px;
   font-weight: 600;
   line-height: 1.5;
   letter-spacing: var(--track-title);
