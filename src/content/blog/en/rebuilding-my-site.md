@@ -10,8 +10,6 @@ My old site was stitched together with Gulp years ago: one photo and two paragra
 
 This time I wanted something simple: a quiet place to put my thoughts down.
 
-> Less is more. White space is content too.
-
 ## Why Astro
 
 [Astro](https://astro.build/) ships static HTML by default and doesn't send extra JavaScript to the browser. For a site that is mostly text, that's exactly what I want.
