@@ -127,7 +127,7 @@ const links = [
       document.getElementById('theme-toggle')?.addEventListener('click', () => {
         const dark = root.dataset.theme
           ? root.dataset.theme === 'dark'
-          : matchMedia('(prefers-color-scheme: dark)').matches;
+          : !matchMedia('(prefers-color-scheme: light)').matches;
         const next = dark ? 'light' : 'dark';
         root.dataset.theme = next;
         try {

@@ -232,14 +232,14 @@ const minutes = readingMinutes(post.body ?? '', lang);
     font-family: var(--mono);
   }
   .prose :global(pre span) {
-    color: var(--shiki-light);
-  }
-  :global(:root[data-theme='dark']) .prose :global(pre span) {
     color: var(--shiki-dark);
   }
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme='light'])) .prose :global(pre span) {
-      color: var(--shiki-dark);
+  :global(:root[data-theme='light']) .prose :global(pre span) {
+    color: var(--shiki-light);
+  }
+  @media (prefers-color-scheme: light) {
+    :global(:root:not([data-theme='dark'])) .prose :global(pre span) {
+      color: var(--shiki-light);
     }
   }
   .prose :global(img) {

@@ -1,11 +1,12 @@
-/* 單欄 640px 的紙張感版面，大量留白；配色是森林綠；深色模式用中性的炭灰，綠色只留給連結和重點 */
+/* 單欄 640px 的紙張感版面，大量留白
+   預設是深色模式（中性的炭灰，綠色只留給連結和重點）；系統設定為淺色時才用淺色（森林綠） */
 :root {
-  --paper: #fbfbf9;
-  --ink: #1d2621;
-  --ink-soft: #606a64;
-  --line: #e2e6e2;
-  --accent: #1e4a35;
-  --wash: #edf1ed;
+  --paper: #171717;
+  --ink: #e6e6e3;
+  --ink-soft: #9b9b97;
+  --line: #2c2c2b;
+  --accent: #7fb898;
+  --wash: #212121;
   --serif: 'EB Garamond', 'Noto Serif TC', 'Songti TC', serif;
   /* Latin 字先用 Lora / Figtree，中文再交給 Noto；標點也不會被排成全形 */
   --serif-tc: 'Lora', 'Noto Serif TC', 'Songti TC', serif;
@@ -17,7 +18,7 @@
   --track-title: 0.05em;
   --track-label: 0.15em;
   --body-weight: 300;
-  color-scheme: light;
+  color-scheme: dark;
 }
 :root:lang(en) {
   --track-body: 0;
@@ -25,25 +26,25 @@
   --track-label: 0.02em;
   --body-weight: 400;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --paper: #171717;
-    --ink: #e6e6e3;
-    --ink-soft: #9b9b97;
-    --line: #2c2c2b;
-    --accent: #7fb898;
-    --wash: #212121;
-    color-scheme: dark;
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --paper: #fbfbf9;
+    --ink: #1d2621;
+    --ink-soft: #606a64;
+    --line: #e2e6e2;
+    --accent: #1e4a35;
+    --wash: #edf1ed;
+    color-scheme: light;
   }
 }
-:root[data-theme='dark'] {
-  --paper: #171717;
-  --ink: #e6e6e3;
-  --ink-soft: #9b9b97;
-  --line: #2c2c2b;
-  --accent: #7fb898;
-  --wash: #212121;
-  color-scheme: dark;
+:root[data-theme='light'] {
+  --paper: #fbfbf9;
+  --ink: #1d2621;
+  --ink-soft: #606a64;
+  --line: #e2e6e2;
+  --accent: #1e4a35;
+  --wash: #edf1ed;
+  color-scheme: light;
 }
 
 *,
