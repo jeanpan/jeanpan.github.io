@@ -42,3 +42,4 @@ push 到 `master` 後，GitHub Actions 會自動 build 並部署到 GitHub Pages
 ## 致謝
 
 會動的 emoji 來自 [Google Noto Animated Emoji](https://googlefonts.github.io/noto-emoji-animation/)（CC BY 4.0）。
+favicon 是 [Noto Emoji](https://github.com/googlefonts/noto-emoji) 的 👩🏻‍💻（Apache License 2.0）。
