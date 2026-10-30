@@ -95,7 +95,16 @@ const links = [
       <header class="site-head">
         <a class="logo" href={`/${lang}/`} aria-label="Jean Pan">
           <span class="logo-me" aria-hidden="true">👩🏻‍💻</span>
-          <span class="logo-think" aria-hidden="true"><Emoji char="🤔" animated /></span>
+          <svg class="logo-think" viewBox="0 0 24 22" aria-hidden="true">
+            <g class="bubble">
+              <circle cx="2.2" cy="19.5" r="1.4" />
+              <circle cx="5.6" cy="15" r="2.1" />
+              <rect x="6" y="1" width="17" height="10.5" rx="5.25" />
+            </g>
+            <circle class="dot" cx="10.3" cy="6.25" r="1.25" />
+            <circle class="dot" cx="14.5" cy="6.25" r="1.25" />
+            <circle class="dot" cx="18.7" cy="6.25" r="1.25" />
+          </svg>
         </a>
         <nav class="site-nav" aria-label={s.navHome}>
           {
@@ -151,21 +160,41 @@ const links = [
     padding-block: 24px;
     border-bottom: 1px solid var(--line);
   }
-  /* logo：用 Mac 的女生（黑頭髮的膚色版本），右上角一個會動的 🤔 */
+  /* logo：用 Mac 的女生（黑頭髮的膚色版本），右上角一個思考泡泡，三個點輪流亮 */
   .logo {
     position: relative;
     display: inline-block;
     line-height: 1;
-    padding: 6px 14px 0 0;
+    padding: 10px 22px 0 0;
   }
   .logo-me {
     font-size: 34px;
   }
   .logo-think {
     position: absolute;
-    top: -2px;
-    right: -2px;
-    font-size: 17px;
+    top: 0;
+    right: 0;
+    width: 28px;
+    height: 26px;
+  }
+  .bubble {
+    fill: var(--paper);
+    stroke: var(--ink-soft);
+    stroke-width: 1;
+  }
+  .dot {
+    fill: var(--accent);
+    animation: think 1.4s ease-in-out infinite;
+  }
+  .dot:nth-of-type(2) {
+    animation-delay: 0.2s;
+  }
+  .dot:nth-of-type(3) {
+    animation-delay: 0.4s;
+  }
+  @keyframes think {
+    0%, 60%, 100% { opacity: 0.25; }
+    30% { opacity: 1; }
   }
   .site-nav {
     display: flex;
