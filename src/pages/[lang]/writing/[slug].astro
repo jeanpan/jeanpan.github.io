@@ -66,7 +66,7 @@ const minutes = readingMinutes(post.body ?? '', lang);
       <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
       <span>{s.readingTime(minutes)}</span>
     </div>
-    <h1>{post.data.emoji && <Emoji char={post.data.emoji} motion="float" />}{post.data.title}</h1>
+    <h1>{post.data.emoji && <Emoji char={post.data.emoji} animated />}{post.data.title}</h1>
     {post.data.description && <p class="sub">{post.data.description}</p>}
 
     {

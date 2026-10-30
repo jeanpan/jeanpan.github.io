@@ -134,36 +134,12 @@ button:focus-visible {
   margin: 0 0 16px;
 }
 
-/* 會動的 emoji */
+/* emoji */
 .emoji {
   display: inline-block;
   font-style: normal;
   line-height: 1;
 }
-.emoji-float {
-  animation: float 3.2s ease-in-out infinite;
-}
-@keyframes float {
-  50% { transform: translateY(-4px); }
-}
-.emoji-blink {
-  animation: blink 4s ease-in-out infinite;
-}
-@keyframes blink {
-  0%, 90%, 100% { transform: scale(1); }
-  95% { transform: scale(1.25); }
-}
-
-/* 打字：快速輕點兩下，停一下 */
-.emoji-type {
-  animation: type 1.6s ease-in-out infinite;
-}
-@keyframes type {
-  0%, 40%, 100% { transform: translateY(0); }
-  10%, 30% { transform: translateY(-2px) rotate(-2deg); }
-  20% { transform: translateY(1px); }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

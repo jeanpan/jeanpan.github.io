@@ -13,7 +13,7 @@ const posts = await getPosts(lang);
 
 <Base lang={lang} title={s.navWriting} nav="writing" altHref={`/${otherLang(lang)}/writing/`}>
   <section class="writing">
-    <h1 class="page-title">{s.navWriting} <Emoji char="✍️" motion="float" /></h1>
+    <h1 class="page-title">{s.navWriting} <Emoji char="✍️" animated /></h1>
     {posts.length ? <PostList posts={posts} groupByYear /> : <p>{s.noPosts}</p>}
   </section>
 </Base>
