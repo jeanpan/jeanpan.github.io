@@ -55,7 +55,9 @@ const codepoints = [...char]
     position: relative;
     width: 1.15em;
     height: 1.15em;
-    vertical-align: -0.15em;
+    /* 和標題文字垂直置中：middle 會偏低一點，再往上拉 0.1em */
+    vertical-align: middle;
+    top: -0.1em;
     text-align: center;
   }
   .noto :global(.player) {
