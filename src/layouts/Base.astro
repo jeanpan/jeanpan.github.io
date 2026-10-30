@@ -93,7 +93,10 @@ const links = [
   <body>
     <div class="page">
       <header class="site-head">
-        <a class="logo" href={`/${lang}/`}>Jean Pan</a>
+        <a class="logo" href={`/${lang}/`} aria-label="Jean Pan">
+          <span class="logo-me" aria-hidden="true">👩🏻‍💻</span>
+          <span class="logo-think" aria-hidden="true"><Emoji char="🤔" animated /></span>
+        </a>
         <nav class="site-nav" aria-label={s.navHome}>
           {
             links.map((l) => (
@@ -142,17 +145,27 @@ const links = [
   .site-head {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     flex-wrap: wrap;
     gap: 12px 24px;
-    padding-block: 28px;
+    padding-block: 24px;
     border-bottom: 1px solid var(--line);
   }
+  /* logo：用 Mac 的女生（黑頭髮的膚色版本），右上角一個會動的 🤔 */
   .logo {
-    font-family: var(--serif);
-    font-size: 21px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+    padding: 6px 14px 0 0;
+  }
+  .logo-me {
+    font-size: 34px;
+  }
+  .logo-think {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    font-size: 17px;
   }
   .site-nav {
     display: flex;
