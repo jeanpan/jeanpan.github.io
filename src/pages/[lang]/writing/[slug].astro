@@ -142,8 +142,13 @@ const minutes = readingMinutes(post.body ?? '', lang);
     text-wrap: balance;
     letter-spacing: var(--track-title);
   }
+  /* 標題前的 emoji 比標題文字小一點 */
   h1 :global(.emoji) {
-    margin-right: 12px;
+    font-size: 0.75em;
+    margin-right: 10px;
+  }
+  h1 :global(.noto) {
+    top: -0.15em;
   }
   .sub {
     color: var(--ink-soft);
